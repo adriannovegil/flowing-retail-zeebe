@@ -9,11 +9,13 @@ Tech stack:
  * Spring Cloud Streams
  * Zeebe
 
- A continuación se muestra un diagrama de los servicios de los que vamos a hacer uso.
+ Following you can see a diagram with all the services we'll to use.
 
 ![Microservices](./docs/zeebe-services.png)
 
-One important aspect on this design is that Zeebe is used as central middleware. By doing so you do not need any messaging system like Apache Kafka or RabbitMQ. This might feel unusal for you, but we do know of quite some projects going into this direction for various reasons. We discuss the differences of the alternatives below.
+One important aspect on this design is that Zeebe is used as central middleware. By doing so you do not need any messaging system like Apache Kafka or RabbitMQ.
+
+This might feel unusal for you, but we do know of quite some projects going into this direction for various reasons. We discuss the differences of the alternatives below.
 
 In order to use Zeebe as orchestrator a workflow model describing the orchestration is deployed from the order service onto the broker. The services then subscribe to work items of that workflow. Zeebe publishes the work and streams it to the corresponding clients:
 
@@ -31,11 +33,10 @@ The decision between both architecture alternatives is a very interessting one. 
 
 ![Alternatives](./docs/zeebe-broker-alternatives.png)
 
-As always it depends on the circumstences which architecture might work in your scenario.
+As always it depends on the circumstences which architecture might work in your scenario:
 
-If your motivation is to use Zeebe as **Saga Coordinator** than it is very natural to run a central broker, as this can sort out all consistency behavior of your Sagas for you.
-
-If you **orchestrate your microservices** you might want to follow the [Smart Endpoints and Dumb pipes](https://martinfowler.com/articles/microservices.html#SmartEndpointsAndDumbPipes) approach from Martin Fowler. This would mean to have e.g. Apache Kafka as dumb pipe and put all the smartness into the services, e.g. the worklow executed within Zeebe.
+ * If your motivation is to use Zeebe as **Saga Coordinator** than it is very natural to run a central broker, as this can sort out all consistency behavior of your Sagas for you.
+ * If you **orchestrate your microservices** you might want to follow the [Smart Endpoints and Dumb pipes](https://martinfowler.com/articles/microservices.html#SmartEndpointsAndDumbPipes) approach from Martin Fowler. This would mean to have e.g. Apache Kafka as dumb pipe and put all the smartness into the services, e.g. the worklow executed within Zeebe.
 
 So there are a couple of **advantages** of using Zeebe as middleware:
 
@@ -50,22 +51,36 @@ Of course there are also **downsides**:
 
 Depending on your choice the workflow model might look a bit different and e.g. the data flow and data mapping might be different (e.g. data mapping in the workflow model instead of the WorkItemHandler).
 
-## Ejecutar la aplicación
+## Fast run
 
-Para lanzar todos los servicios ejecute el siguiente comando.
+To execute all the services with all the configuration by default, just execute the following command.
 
 ```
  $ make run
 ```
 
-Una vez que todos los servicios estén levantados:
+Once all the services are up and running, you can access to the following URL's:
 
-* Lanzar un nuevo "Order" [http://localhost:8090](http://localhost:8090)
-* Podemos inspeccionar el servicios de "Order" [http://localhost:8091](http://localhost:8091)
-* Podemos inspeccionar el servicios de "Payment" [http://localhost:8092](http://localhost:8092)
-* Podemos monitorizar los eventos del sistemas en  [http://localhost:8095](http://localhost:8095)
+ * If you want to simulate a new order `Order` [http://localhost:8090](http://localhost:8090)
+ * Camunda webapp for the service `Order` [http://localhost:8091](http://localhost:8091)
+ * Camunda webapp for the service `Payment` [http://localhost:8092](http://localhost:8092)
+ * You can monitor all the system events in  [http://localhost:8095](http://localhost:8095)
 
-Las credenciales de acceso a los servicios de Order y Payment son:
+To access to the Camunda webapp in the `Order` and `Payment` services, you can user the following credentials:
 
  * user: `demo`
  * password: `demo`
+
+## More help
+
+If you need more help, you just have to execute the following command:
+
+```
+ $ make
+```
+
+## Referencias
+
+ * https://blog.bernd-ruecker.com/flowing-retail-demonstrating-aspects-of-microservices-events-and-their-flow-with-concrete-source-7f3abdd40e53
+ * https://blog.couchbase.com/saga-pattern-implement-business-transactions-using-microservices-part/
+ * https://blog.couchbase.com/saga-pattern-implement-business-transactions-using-microservices-part-2/
